@@ -11,12 +11,10 @@ void cpuGemm(const float* A, const float* B, float* C, int M, int K, int N, floa
             for (int k = 0; k < K; ++k) {
                 acc += A[i * K + k] * B[k * N + j];
             }
-            C[i * N + j] = acc + bias; // add bias term
+            C[i * N + j] = acc + bias;
         }
     }
 }
-
-// check if two arrays are approximately equal
 bool approxEqual(const float* A, const float* B, int size, float tol)
 {
     for (int i = 0; i < size; ++i)

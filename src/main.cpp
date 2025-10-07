@@ -43,16 +43,16 @@ int main(int argc, char** argv)
     std::cout << "Matrix size: M=" << M << ", K=" << K << ", N=" << N << "\n";
     std::cout << "Kernel: " << kernelType << "\n";
     
+    // generate test matrices
+    std::vector<float> A(M * K), B(K * N), C_cpu(M * N), C_gpu(M * N);
+    generateRandomData(A.data(), M * K);
+    generateRandomData(B.data(), K * N);
+    
     if (kernelType == "cpu")
     {
-        //generating test matrices
-        std::vector<float> A(M * K), B(K * N), C(M * N);
-        generateRandomData(A.data(), M * K);
-        generateRandomData(B.data(), K * N);
-        
         auto start = std::chrono::high_resolution_clock::now();
         for (int i = 0; i < iters; ++i) {
-            cpuGemm(A.data(), B.data(), C.data(), M, K, N, 0.0f);
+            cpuGemm(A.data(), B.data(), C_cpu.data(), M, K, N, 0.0f);
         }
         auto end = std::chrono::high_resolution_clock::now();
         
@@ -63,11 +63,48 @@ int main(int argc, char** argv)
         
         float sum = 0.0f;
         for (int i = 0; i < M * N; ++i) {
-            sum += C[i];
+            sum += C_cpu[i];
         }
         std::cout << "Result sum: " << sum << " (should be non-zero)\n";
-    } else {
-        std::cout << "GPU kernels not implemented yet\n";
+    }
+    else if (kernelType == "naive")
+    {
+        auto start = std::chrono::high_resolution_clock::now();
+        for (int i = 0; i < iters; ++i) {
+            runNaiveGemm(A.data(), B.data(), C_gpu.data(), M, K, N);
+        }
+        auto end = std::chrono::high_resolution_clock::now();
+        
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+        float avgTimeMs = duration.count() / (1000.0f * iters);
+        
+        std::cout << "Naive GPU GEMM time: " << avgTimeMs << " ms\n";
+        
+        cpuGemm(A.data(), B.data(), C_cpu.data(), M, K, N, 0.0f);
+        bool correct = approxEqual(C_cpu.data(), C_gpu.data(), M * N);
+        std::cout << "Correctness check: " << (correct ? "PASS" : "FAIL") << "\n";
+    }
+    else if (kernelType == "tiled")
+    {
+        auto start = std::chrono::high_resolution_clock::now();
+        for (int i = 0; i < iters; ++i) {
+            runTiledGemm(A.data(), B.data(), C_gpu.data(), M, K, N);
+        }
+        auto end = std::chrono::high_resolution_clock::now();
+        
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+        float avgTimeMs = duration.count() / (1000.0f * iters);
+        
+        std::cout << "Tiled GPU GEMM time: " << avgTimeMs << " ms\n";
+        
+        cpuGemm(A.data(), B.data(), C_cpu.data(), M, K, N, 0.0f);
+        bool correct = approxEqual(C_cpu.data(), C_gpu.data(), M * N);
+        std::cout << "Correctness check: " << (correct ? "PASS" : "FAIL") << "\n";
+    }
+    else
+    {
+        std::cout << "Unknown kernel type: " << kernelType << "\n";
+        return 1;
     }
     
     return 0;

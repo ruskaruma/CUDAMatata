@@ -46,13 +46,11 @@ CUDAMatata/
 
 ## Example Run
 ```
-Device info: NVIDIA GeForce RTX 4060
+CUDAMatata: It means no race conditions, for the rest of your days.
 Matrix size: M=1024, K=1024, N=1024
-
-naive kernel  time = 420.7 ms
-shared-tiled  time = 38.5 ms
-
-Speedup: ~11× over naive.
+Kernel: tiled
+Tiled GPU GEMM time: 231.956 ms
+Correctness check: PASS
 ```
 
 ---
@@ -90,14 +88,6 @@ Key metrics:
 - Coalesced loads are critical for bandwidth efficiency
 - Occupancy is a balancing act between register use and block size
 - Profiling reveals optimization ceilings beyond intuition
-
----
-
-## Future Work
-- Add FP16 + Tensor Core path
-- Integrate cuBLAS SGEMM for comparison
-- CI/CD on CUDA runners
-- Tile-size autotuning
 
 ---
 
