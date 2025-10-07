@@ -7,13 +7,13 @@ import os
 def run_test(matrix_size):
     print(f"Testing matrix size {matrix_size}x{matrix_size}")
     
-    # run cpu version
+    #run cpu version
     result_cpu = subprocess.run([
         './gemm', '--kernel', 'cpu', '--M', str(matrix_size), 
         '--K', str(matrix_size), '--N', str(matrix_size), '--iters', '1'
     ], capture_output=True, text=True, cwd='build')
     
-    # run gpu versions
+    #run gpu versions
     result_naive = subprocess.run([
         './gemm', '--kernel', 'naive', '--M', str(matrix_size), 
         '--K', str(matrix_size), '--N', str(matrix_size), '--iters', '1'
@@ -24,7 +24,7 @@ def run_test(matrix_size):
         '--K', str(matrix_size), '--N', str(matrix_size), '--iters', '1'
     ], capture_output=True, text=True, cwd='build')
     
-    # check if all passed
+   #checking if all passed or not
     naive_pass = "PASS" in result_naive.stdout
     tiled_pass = "PASS" in result_tiled.stdout
     
@@ -35,17 +35,13 @@ def run_test(matrix_size):
     return naive_pass and tiled_pass
 
 def main():
-    print("CUDAMatata Correctness Tests")
-    print("===========================")
-    
+    print("CUDAMatata Correctness Tests")   
     test_sizes = [256, 512, 1024]
-    all_passed = True
-    
+    all_passed = True    
     for size in test_sizes:
         if not run_test(size):
             all_passed = False
         print()
-    
     if all_passed:
         print("All tests PASSED!")
         sys.exit(0)

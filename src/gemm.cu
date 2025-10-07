@@ -14,7 +14,7 @@ __global__ void naiveGemmKernel(const float* A, const float* B, float* C, int M,
 }
 __global__ void tiledGemmKernel(const float* A, const float* B, float* C, int M, int K, int N)
 {
-    const int TS = 16;
+    const int TS = 16;  // tileSize=32 slower on RTX4060
     __shared__ float tileA[TS][TS+1];
     __shared__ float tileB[TS][TS+1];
     
@@ -97,3 +97,10 @@ void runTiledGemm(const float* h_A, const float* h_B, float* h_C, int M, int K, 
     cudaFree(d_B);
     cudaFree(d_C);
 }
+
+#ifdef ENABLE_FP16
+__global__ void fp16GemmKernel(const half* A, const half* B, half* C, int M, int K, int N)
+{
+    // todo: implement FP16 kernel with Tensor Cores
+}
+#endif
