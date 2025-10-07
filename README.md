@@ -1,8 +1,6 @@
 # CUDAMatata
 
-### GPU-Accelerated Matrix Multiplication with Shared Memory Tiling  
-*"It means no race conditions, for the rest of your days."*
-
+### GPU-Accelerated Matrix Multiplication with Shared Memory Tiling
 ---
 
 ## Overview
