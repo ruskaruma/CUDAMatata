@@ -4,9 +4,7 @@
 #include <chrono>
 
 void cpuGemm(const float* A, const float* B, float* C, int M, int K, int N, float bias);
-
 bool approxEqual(const float* A, const float* B, int size, float tol = 1e-4);
-
 void generateRandomData(float* data, int size);
 
 class CpuTimer {

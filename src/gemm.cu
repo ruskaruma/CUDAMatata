@@ -15,8 +15,8 @@ __global__ void naiveGemmKernel(const float* A, const float* B, float* C, int M,
 __global__ void tiledGemmKernel(const float* A, const float* B, float* C, int M, int K, int N)
 {
     const int TS = 16;
-    __shared__ float tileA[TS][TS];
-    __shared__ float tileB[TS][TS];
+    __shared__ float tileA[TS][TS+1];
+    __shared__ float tileB[TS][TS+1];
     
     int row = blockIdx.y * blockDim.y + threadIdx.y;
     int col = blockIdx.x * blockDim.x + threadIdx.x; 
@@ -42,6 +42,7 @@ __global__ void tiledGemmKernel(const float* A, const float* B, float* C, int M,
             tileB[threadIdx.y][threadIdx.x] = 0.0f;
         }
         __syncthreads();
+        #pragma unroll
         for (int i = 0; i < TS; ++i) {
             sum += tileA[threadIdx.y][i] * tileB[i][threadIdx.x];
         }

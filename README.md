@@ -46,8 +46,8 @@ CUDAMatata/
 ```
 CUDAMatata: It means no race conditions, for the rest of your days.
 Matrix size: M=1024, K=1024, N=1024
-Kernel: tiled
-Tiled GPU GEMM time: 231.956 ms
+Kernel: naive
+Naive GPU GEMM time: 270.824 ms
 Correctness check: PASS
 ```
 
