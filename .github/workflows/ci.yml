@@ -13,18 +13,20 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: Install build dependencies
+    - name: Install CUDA toolkit
       run: |
+        wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-keyring_1.0-1_all.deb
+        sudo dpkg -i cuda-keyring_1.0-1_all.deb
         sudo apt-get update
-        sudo apt-get install -y cmake build-essential
+        sudo apt-get install -y cuda-toolkit-12-2
     
-    - name: Configure CMake (CPU only)
+    - name: Configure CMake with CUDA
       run: |
         mkdir build
         cd build
         cmake .. -DCMAKE_BUILD_TYPE=Release
     
-    - name: Build
+    - name: Build (includes CUDA compilation)
       run: |
         cd build
         cmake --build . -j
@@ -33,4 +35,4 @@ jobs:
       run: |
         cd build
         ./gemm --kernel cpu --M 256 --K 256 --N 256
-        echo "CPU build and test completed successfully"
+        echo "Build completed successfully - CUDA code compiled"
